@@ -32,3 +32,8 @@ This template comes with the following features:
 - `storybook` – starts storybook dev server
 - `storybook:build` – build production storybook bundle to `storybook-static`
 - `prettier:write` – formats all files with Prettier
+
+## Dependencies
+
+- node-v23.6.0
+- vite/6.0.10
