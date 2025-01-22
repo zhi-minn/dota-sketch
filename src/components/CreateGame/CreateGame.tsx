@@ -1,6 +1,6 @@
 
 import classes from './CreateGame.module.css';
-import {Accordion, Button, Divider, Group, Modal, SegmentedControl, Text} from '@mantine/core';
+import {Accordion, Button, Checkbox, Divider, Group, Modal, SegmentedControl, Select, Text} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {useState} from "react";
 
@@ -55,9 +55,45 @@ export function CreateGame() {
         <Accordion>
           <Accordion.Item key="Advanced options" value="Advanced options">
             <Accordion.Control icon="⚙️">Advanced options</Accordion.Control>
-            <Accordion.Panel>Options Placeholder</Accordion.Panel>
+            <Accordion.Panel>
+              <Group grow gap="md" mb="md">
+                <Select
+                  label="Drawing time"
+                  placeholder="Select"
+                  data={['30s', '60s', '90s']}
+                  defaultValue="90s"
+                />
+                <Select
+                  label="Rounds"
+                  placeholder="Select"
+                  data={['1', '3', '5', '7', '9']}
+                  defaultValue="5"
+                />
+                <Select
+                  label="Max Players"
+                  placeholder="Select"
+                  data={['4', '8', '12']}
+                  defaultValue="4"
+                />
+                <Select
+                  label="First guess delay"
+                  placeholder="Select"
+                  data={['0s', '5s', '10s', '15s']}
+                  defaultValue="0s"
+                />
+              </Group>
+
+              <Checkbox label="Reduce time to 30s when word is guessed" defaultChecked mb="xs" />
+              <Checkbox label="Allow re-rolling word once" defaultChecked mb="xs" />
+              <Checkbox label='Public game (show in "Browse Games")' mb="xs" />
+            </Accordion.Panel>
           </Accordion.Item>
         </Accordion>
+
+        <Group justify="flex-end" mt="md">
+          <Button variant="default" onClick={close}>Close</Button>
+          <Button>Create</Button>
+        </Group>
       </Modal>
 
       <Button size="md" onClick={open}>
