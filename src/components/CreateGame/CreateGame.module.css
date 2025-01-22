@@ -1,0 +1,18 @@
+.modal {
+    font-weight: bold;
+}
+
+.divider {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.accordion_divider {
+    margin-top: 1em;
+}
+
+.game_options_group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
