@@ -3,10 +3,15 @@ import classes from './CreateGame.module.css';
 import {Accordion, Button, Checkbox, Divider, Group, Modal, SegmentedControl, Select, Text} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {useState} from "react";
+import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 export function CreateGame() {
+  const navigate = useNavigate();
+
   const [opened, { open, close }] = useDisclosure();
 
+  // Game options
   const [selected, setSelected] = useState<string[]>([]);
   const options = ['Heroes', 'Items', 'Abilities'];
   const toggleOption = (value: string) => {
@@ -16,6 +21,13 @@ export function CreateGame() {
         : [...current, value]
     );
   };
+
+  // Create Game
+  const createGame = async () => {
+    const response = await axios.post('http://localhost:8081/api/create-game');
+    const { gameCode } = response.data;
+    navigate(`/lobby/${gameCode}`);
+  }
 
   return (
     <>
@@ -92,7 +104,7 @@ export function CreateGame() {
 
         <Group justify="flex-end" mt="md">
           <Button variant="default" onClick={close}>Close</Button>
-          <Button>Create</Button>
+          <Button onClick={createGame}>Create</Button>
         </Group>
       </Modal>
 
