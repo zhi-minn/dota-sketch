@@ -3,10 +3,12 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Group, Modal, TextInput } from "@mantine/core";
 
-
 export function EnterNickname() {
   const navigate = useNavigate();
+  const [nickname, setNickname] = useState('');
+  const [modalOpened, setModalOpened] = useState(false);
 
+  // Invalid lobby redirection
   const { code: gameCode } = useParams<{ code: string }>();
   useEffect(() => {
     const fetchLiveGames = async () => {
@@ -19,12 +21,19 @@ export function EnterNickname() {
     fetchLiveGames();
   }, []);
 
-  const [nickname, setNickname] = useState('');
-  const [modalOpened, setModalOpened] = useState(true);
+  // Open modal if nickname not set
+  useEffect(() => {
+    const storedName = localStorage.getItem(`name_${gameCode}`);
+    if (!storedName) {
+      setModalOpened(true);
+    } else {
+      setNickname(storedName);
+    }
+  }, []);
 
   const joinGame = () => {
-    // Communicate nickname to backend (WebSocket)
     console.log('Joining game with nickname:', nickname);
+    localStorage.setItem(`name_${gameCode}`, nickname);
     setModalOpened(false);
   };
 
