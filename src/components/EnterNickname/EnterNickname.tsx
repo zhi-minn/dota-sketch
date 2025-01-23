@@ -1,9 +1,23 @@
-import {Button, Group, Modal, TextInput} from "@mantine/core";
-import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button, Group, Modal, TextInput } from "@mantine/core";
+
 
 export function EnterNickname() {
   const navigate = useNavigate();
+
+  const { code: gameCode } = useParams<{ code: string }>();
+  useEffect(() => {
+    const fetchLiveGames = async () => {
+      const response = await axios.post("http://localhost:8081/metrics/live-games")
+      if (!gameCode || !Object.keys(response.data).includes(gameCode)) {
+        navigate("/")
+      }
+    }
+
+    fetchLiveGames();
+  }, []);
 
   const [nickname, setNickname] = useState('');
   const [modalOpened, setModalOpened] = useState(true);
