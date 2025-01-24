@@ -1,0 +1,7 @@
+.header {
+    height: 60px;
+    background-color: lightcyan;
+    padding-left: var(--mantine-spacing-md);
+    padding-right: var(--mantine-spacing-md);
+    border-bottom: 1px solid lightgray;
+}
