@@ -1,18 +1,68 @@
-import {EnterNickname} from "@/components/EnterNickname/EnterNickname";
 import {LobbyHeader} from "@/components/LobbyHeader/LobbyHeader";
 import { Box, Grid } from '@mantine/core';
-import {LobbyInfoPanel} from "@/components/LobbyInfoPanel/LobbyInfoPanel";
 import {Canvas} from "@/components/Canvas/Canvas";
+import { EnterNickname } from '@/components/EnterNickname/EnterNickname';
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { isWsMessage, WsMessage } from '@/types/websocket';
+import { LobbySettings } from '@/types/lobbySettings';
+import LobbyInfoPanel from '@/components/LobbyInfoPanel/LobbyInfoPanel';
 
 export function LobbyPage() {
+  const { code } = useParams();
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [lobbySettings, setLobbySettings] = useState<LobbySettings>();
+
+  const handleNicknameEntered = (nickname: string) => {
+    connectToWebsocket();
+  }
+
+  const connectToWebsocket = () => {
+    const ws = new WebSocket(`ws://localhost:8081/ws?lobbyCode=${code}`);
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.onmessage = (event) => {
+      handleMessageEvent(event);
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    setSocket(ws);
+  }
+
+  const handleMessageEvent = (event: MessageEvent) => {
+    const data: WsMessage = JSON.parse(event.data);
+
+    if (!isWsMessage(data)) {
+      console.error("Invalid WebSocket message format: ", data);
+      return;
+    }
+
+    switch (data.type) {
+      case "LOBBY_SETTINGS":
+        setLobbySettings(data.payload as LobbySettings);
+    }
+  }
+
   return (
     <>
-      <EnterNickname />
+      <EnterNickname onNicknameEntered={handleNicknameEntered} />
+      {lobbySettings &&
+        <>
       <LobbyHeader />
       <Grid grow style={{paddingTop: "0.5em"}}>
         {/* Left panel: Lobby info */}
         <Grid.Col span={3}>
-          <LobbyInfoPanel/>
+          <LobbyInfoPanel lobbySettings={lobbySettings} />
         </Grid.Col>
 
         {/* Center panel: drawing canvas + color palette */}
@@ -46,9 +96,11 @@ export function LobbyPage() {
 
         {/* Right panel: chat/status area */}
         <Grid.Col span={3}>
-          <LobbyInfoPanel />
+          <LobbyInfoPanel lobbySettings={lobbySettings} />
         </Grid.Col>
       </Grid>
+        </>
+      }
     </>
   )
 }

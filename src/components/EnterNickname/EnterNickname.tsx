@@ -3,7 +3,11 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Group, Modal, TextInput } from "@mantine/core";
 
-export function EnterNickname() {
+interface EnterNicknameProps {
+  onNicknameEntered: (nickname: string) => void;
+}
+
+export function EnterNickname({ onNicknameEntered }: EnterNicknameProps) {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState('');
   const [modalOpened, setModalOpened] = useState(false);
@@ -12,7 +16,7 @@ export function EnterNickname() {
   const { code: gameCode } = useParams<{ code: string }>();
   useEffect(() => {
     const fetchLiveGames = async () => {
-      const response = await axios.post("http://localhost:8081/metrics/live-games")
+      const response = await axios.get("http://localhost:8081/metrics/live-games")
       if (!gameCode || !Object.keys(response.data).includes(gameCode)) {
         navigate("/")
       }
@@ -23,7 +27,7 @@ export function EnterNickname() {
 
   // Open modal if nickname not set
   useEffect(() => {
-    const storedName = localStorage.getItem(`name_${gameCode}`);
+    const storedName = localStorage.getItem(`${gameCode}_uid`);
     if (!storedName) {
       setModalOpened(true);
     } else {
@@ -31,10 +35,12 @@ export function EnterNickname() {
     }
   }, []);
 
-  const joinGame = () => {
-    console.log('Joining game with nickname:', nickname);
-    localStorage.setItem(`name_${gameCode}`, nickname);
+  const joinGame = async () => {
+    const response = await axios.post(`http://localhost:8081/api/games/${gameCode}`, { nick: nickname });
+    const { uid } = response.data;
+    localStorage.setItem(`${gameCode}_uid`, uid);
     setModalOpened(false);
+    onNicknameEntered(nickname);
   };
 
   // Back button

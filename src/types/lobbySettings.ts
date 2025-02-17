@@ -1,4 +1,6 @@
-export type GameOptions = {
+import { GameCategory } from '@/enums/gameCategory';
+
+export type LobbySettings = {
   categories: GameCategory[];
   drawingTime: number;
   rounds: number;
