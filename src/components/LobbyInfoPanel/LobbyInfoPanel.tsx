@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Card, Divider, Group, Stack, Text } from '@mantine/core';
 import { LobbySettings } from '@/types/lobbySettings';
-
+import { useParams } from 'react-router-dom';
 
 interface LobbyInfoPanelProps {
   lobbySettings: LobbySettings;
@@ -10,13 +10,14 @@ interface LobbyInfoPanelProps {
 const LobbyInfoPanel: React.FC<LobbyInfoPanelProps> = ({
   lobbySettings
 })=> {
+  const { code } = useParams();
 
   return (
     <Card shadow="sm" p="md" radius="md" h="90vh" withBorder>
       <Stack gap="xs">
         <Group gap="apart">
           <Text fw={500}>Lobby Code</Text>
-          <Text size="sm">CA7Z</Text>
+          <Text size="sm">{code}</Text>
         </Group>
 
         <Divider />
@@ -26,10 +27,14 @@ const LobbyInfoPanel: React.FC<LobbyInfoPanelProps> = ({
         <Text size="sm">Guess time: {lobbySettings.drawingTime}</Text>
         <Text size="sm">Max Players: {lobbySettings.maxPlayers}</Text>
         {lobbySettings.categories.map((category) => (
-          <Text size="sm">{category.valueOf()}: ✓</Text>
+          <Text size="sm">{category.toString()}: ✓</Text>
         ))}
-        <Text size="sm">Reduce time on guess: ✓</Text>
-        <Text size="sm">Allow re-rolling: ✓</Text>
+        {lobbySettings.reduceTimeWhenGuessed &&
+          <Text size="sm">Reduce time on guess: ✓</Text>
+        }
+        {lobbySettings.allowWordReroll &&
+          <Text size="sm">Allow re-rolling: ✓</Text>
+        }
 
         <Divider />
 

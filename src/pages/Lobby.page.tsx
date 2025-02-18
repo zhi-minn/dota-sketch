@@ -1,8 +1,8 @@
-import {LobbyHeader} from "@/components/LobbyHeader/LobbyHeader";
+import { LobbyHeader } from "@/components/LobbyHeader/LobbyHeader";
 import { Box, Grid } from '@mantine/core';
-import {Canvas} from "@/components/Canvas/Canvas";
+import { Canvas } from "@/components/Canvas/Canvas";
 import { EnterNickname } from '@/components/EnterNickname/EnterNickname';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { isWsMessage, WsMessage } from '@/types/websocket';
 import { LobbySettings } from '@/types/lobbySettings';
@@ -12,13 +12,14 @@ export function LobbyPage() {
   const { code } = useParams();
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [lobbySettings, setLobbySettings] = useState<LobbySettings>();
+  const [uid, setUid] = useState<string | null>(localStorage.getItem(`${code}_uid`));
 
-  const handleNicknameEntered = (nickname: string) => {
-    connectToWebsocket();
+  const handleNicknameEntered = (uid: string) => {
+    setUid(uid);
   }
 
-  const connectToWebsocket = () => {
-    const ws = new WebSocket(`ws://localhost:8081/ws?lobbyCode=${code}`);
+  const connectToWebsocket = (uid: string) => {
+    const ws = new WebSocket(`ws://localhost:8081/ws?lobbyCode=${code}&uid=${uid}`);
 
     ws.onopen = () => {
       console.log("WebSocket connected");
@@ -38,6 +39,12 @@ export function LobbyPage() {
 
     setSocket(ws);
   }
+
+  useEffect(() => {
+    if (uid) {
+      connectToWebsocket(uid);
+    }
+  }, [uid]);
 
   const handleMessageEvent = (event: MessageEvent) => {
     const data: WsMessage = JSON.parse(event.data);
@@ -59,7 +66,7 @@ export function LobbyPage() {
       {lobbySettings &&
         <>
       <LobbyHeader />
-      <Grid grow style={{paddingTop: "0.5em"}}>
+      <Grid style={{paddingTop: "0.5em"}}>
         {/* Left panel: Lobby info */}
         <Grid.Col span={3}>
           <LobbyInfoPanel lobbySettings={lobbySettings} />

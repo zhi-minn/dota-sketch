@@ -40,7 +40,7 @@ export function EnterNickname({ onNicknameEntered }: EnterNicknameProps) {
     const { uid } = response.data;
     localStorage.setItem(`${gameCode}_uid`, uid);
     setModalOpened(false);
-    onNicknameEntered(nickname);
+    onNicknameEntered(uid);
   };
 
   // Back button
